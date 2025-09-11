@@ -11,11 +11,17 @@ from typing import List, Dict, Any
 from dotenv import load_dotenv
 
 import openai
-from langchain.vectorstores import Chroma
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_openai.embeddings import OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
 from tavily import TavilyClient
 
 load_dotenv()
+
+# LangSmith 추적 활성화
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+if os.getenv("LANGCHAIN_API_KEY"):
+    os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT", "rag-system")
 
 class IssueQuerySystem:
     def __init__(self):
@@ -28,8 +34,13 @@ class IssueQuerySystem:
         if not self.tavily_api_key:
             raise ValueError("TAVILY_API_KEY not found in environment variables")
         
-        # OpenAI 클라이언트 초기화
-        self.openai_client = openai.OpenAI(api_key=self.openai_api_key)
+        # LangChain ChatOpenAI 초기화 (LangSmith 추적 가능)
+        self.llm = ChatOpenAI(
+            model="gpt-4",
+            temperature=0.7,
+            max_tokens=2000,
+            api_key=self.openai_api_key
+        )
         
         # Embeddings 초기화 (ingest.py와 동일한 모델 사용)
         self.embeddings = OpenAIEmbeddings(
@@ -159,17 +170,16 @@ class IssueQuerySystem:
 """
 
         try:
-            response = self.openai_client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=2000,
-                temperature=0.7
-            )
+            # LangChain ChatOpenAI를 사용하여 LangSmith에서 추적 가능
+            from langchain_core.messages import SystemMessage, HumanMessage
             
-            solution = response.choices[0].message.content
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
+            ]
+            
+            response = self.llm.invoke(messages)
+            solution = response.content
             print("✅ Solution generated successfully")
             return solution
             

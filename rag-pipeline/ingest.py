@@ -14,11 +14,16 @@ from dotenv import load_dotenv
 
 import openai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_openai.embeddings import OpenAIEmbeddings
 import chromadb
 
 load_dotenv()
+
+# LangSmith 추적 활성화
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+if os.getenv("LANGCHAIN_API_KEY"):
+    os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT", "rag-system")
 
 class RepositoryIngestor:
     def __init__(self):

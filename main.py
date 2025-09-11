@@ -11,10 +11,16 @@ from pathlib import Path
 
 # 현재 디렉토리를 Python path에 추가
 current_dir = Path(__file__).parent
-sys.path.append(str(current_dir))
+sys.path.insert(0, str(current_dir))
 
-from rag_pipeline.ingest import RepositoryIngestor
-from rag_pipeline.query import IssueQuerySystem
+try:
+    from rag_pipeline.ingest import RepositoryIngestor
+    from rag_pipeline.query import IssueQuerySystem
+except ImportError:
+    # Alternative import method
+    sys.path.insert(0, str(current_dir / 'rag-pipeline'))
+    from ingest import RepositoryIngestor
+    from query import IssueQuerySystem
 
 def main():
     parser = argparse.ArgumentParser(
