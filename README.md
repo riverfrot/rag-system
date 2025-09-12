@@ -224,6 +224,23 @@ export PYTHONPATH=.
 python -v main.py ingest --repo https://github.com/example/repo
 ```
 
+## Roadmap
+
+**TODO:**
+- [ ] Vector Database 성능 최적화 (Pinecone/Chroma)
+- [ ] Memory 관리 및 conversation chain 고도화
+- [ ] Error handling 및 retry 로직 추가
+- [ ] API 응답 시간 모니터링 추가
+
+**Detail Message:**
+```python
+# 추가해야 할 기능들
+1. Multi-modal AI 연동 (이미지, 문서 처리)
+2. Custom Tool 개발 (웹 크롤링, 데이터 분석)
+3. 실시간 성능 대시보드
+4. 비용 최적화 로직
+```
+
 ## 라이선스
 
 MIT License

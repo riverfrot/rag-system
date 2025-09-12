@@ -112,3 +112,6 @@ secrets.json
 
 # ChromaDB
 .chroma/
+
+# DOC
+docs/
